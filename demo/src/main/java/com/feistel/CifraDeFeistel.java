@@ -12,12 +12,14 @@ public class CifraDeFeistel {
     public static int encriptar(int blocoClaro, String chave){
         byte[] subchaves = gerarSubchaves(chave);
         int[] partes = dividirBloco(blocoClaro);
-        int esquerda = partes[0];
-        int direita = partes[1];
+        int esquerda = partes[0]; // 16 bits mais significativos
+        int direita = partes[1]; // 16 bits menos significativos
 
         for(int i=0; i<NUM_RODADAS; i++){
             int temp = direita;
+            // Nova direita: esquerda anterior XOR função f aplicada à direita anterior
             direita = esquerda ^ funcaoF(direita, subchaves[i]);
+            // Nova esquerda vira a antiga direita
             esquerda = temp;
         }
 
@@ -33,7 +35,9 @@ public class CifraDeFeistel {
 
         for (int i = NUM_RODADAS - 1; i >= 0; i--) {
             int temp = esquerda;
+            // Nova esquerda: direita anterior XOR função f da esquerda anterior
             esquerda = direita ^ funcaoF(esquerda, subchaves[i]);
+            // Nova direita vira a antiga esquerda
             direita = temp;
         }
 
@@ -42,8 +46,8 @@ public class CifraDeFeistel {
 
     // Divide o bloco de 32 bits em duas metades de 16 bits
     private static int[] dividirBloco(int bloco) {
-        int esquerda = (bloco >>> 16) & 0xFFFF;
-        int direita = bloco & 0xFFFF;
+        int esquerda = (bloco >>> 16) & 0xFFFF; // bits mais à esquerda
+        int direita = bloco & 0xFFFF; // bits mais à direita
         return new int[] { esquerda, direita };
     }
 
@@ -57,7 +61,7 @@ public class CifraDeFeistel {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(chave.getBytes());
-            return Arrays.copyOf(hash, NUM_RODADAS);
+            return Arrays.copyOf(hash, NUM_RODADAS); // 16 subchaves de 1 byte
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 não disponível.");
         }
@@ -73,7 +77,7 @@ public class CifraDeFeistel {
 
     public static void main(String[] args) {
         String chave = "minha_chave_segura";
-        int textoClaro = 0xCAFEBABE;  // 32 bits
+        int textoClaro = 0xCAFEBABE;  // valor de 32 bits
 
         int criptografado = encriptar(textoClaro, chave);
         int decriptado = decriptar(criptografado, chave);
