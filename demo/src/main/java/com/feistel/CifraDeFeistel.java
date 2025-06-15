@@ -42,7 +42,7 @@ public class CifraDeFeistel {
 
     // Divide o bloco de 32 bits em duas metades de 16 bits
     private static int[] dividirBloco(int bloco) {
-        int esquerda = (bloco >>> 16);
+        int esquerda = (bloco >>> 16) & 0xFFFF;
         int direita = bloco & 0xFFFF;
         return new int[] { esquerda, direita };
     }
