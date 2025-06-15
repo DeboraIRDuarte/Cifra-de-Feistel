@@ -65,7 +65,7 @@ public class CifraDeFeistel {
 
     // Função de mistura (usa XOR e um shift)
     private static int funcaoF(int valor, byte subchave) {
-        return (valor ^ subchave);
+        return (valor ^ subchave) ^ ((valor << 5) | (valor >>> 11));
     }
 
     public static void main(String[] args) {
